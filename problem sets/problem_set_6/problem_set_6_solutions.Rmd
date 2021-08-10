@@ -1,0 +1,185 @@
+---
+title: "Problem Set 6"
+author: "NAME HERE"
+date: "10/1/2020"
+output: pdf_document
+---
+
+Due: October 12th
+
+For this problem set we will work with fictional data comparing the efficacy of two interventions. The interventions took place across several states and cities, with slight variations in dates. The outcome is a continuous variable.
+
+```{r, include=F, echo=F}
+library(tidyverse)
+library(lubridate)
+
+df <- read_csv("data/missing_interventions.csv")
+```
+
+### Question 1
+
+There's missing data in this data set. Can you identify them? In the next question you will re-code these values to NA.
+
+```{r}
+head(df) # I see some strange values in gender already
+
+# first see how many NAs in the dataset 
+sum(is.na(df)) # 25 NAs
+
+# take a look at the gender unique values
+unique(df$gender) # -999, -1 are most likely NA values
+
+# take a look at orientation unique values
+unique(df$orientation) # -999, -1 are most likely NA values
+
+# we haven't learned this, but you can also use the following code
+# to find columns with missing values:
+# sapply taks a list, vector, or data frame and outputs a vector or matrix
+# we supply the data frame and use the function anyNA()
+# all of this occurs when accessing names(df)
+# note that this code won't help us find -999, -1
+names(df)[sapply(df, anyNA)]
+```
+
+How many NAs did you find? 
+
+* 32 NAs
+
+Are there other values you think may count as NA?
+
+* -999, -1 
+
+\newpage
+
+### Question 2
+
+For the other values you believe may also be NAs, re-code them as NA. 
+```{r}
+df <- df %>%
+  # notice how we can manipulate multiple variables in one mutate call
+  mutate(gender = if_else(gender %in% c("female", "male"), # if female/male 
+                          gender, # keep same
+                          NA_character_), # otherwise, NA
+         orientation = if_else(orientation %in% # check for:
+                                 c("heterosexual", "lesbian/gay woman", "gay", "other"),
+                              orientation, # keep same 
+                              NA_character_)) # otherwise NA
+```
+
+\newpage
+
+### Question 3
+
+At a glance, we can already see errors with city and state names. Let's first fix these entries to have uniform naming where cities are properly capitalized and states are capitalized. For example, we want to see "San Antonio" and "TX" rather than "san Antonio" and "tx". We want you to use distinct(), pull(), and case_when() for this question.
+
+```{r}
+ # pull/look at unique city names
+df %>%
+  select(city) %>%
+  distinct() %>%
+  pull()
+
+# pull/look at unique states 
+df %>% 
+  select(state) %>%
+  distinct() %>%
+  pull()
+
+# fix city and state using case_when()
+df <- df %>%
+  mutate(
+    city = case_when(
+      city %in% c("Atlanta", "atlanta", "atlAnTa") ~ "Atlanta",
+      city %in% c("Austin", "austin") ~ "Austin",
+      city %in% c("San Antonio", "san Antonio") ~ "San Antonio",
+      city %in% c("Oakland", "oakland", "iakland") ~ "Oakland",
+      city %in% c("Hayward", "hayward", "Haywarf") ~ "Hayward"),
+    state = case_when(
+      state %in% c("GA", "gA", "ga", "G A") ~ "GA",
+      state %in% c("TX", "tX", "tx") ~ "TX",
+      state %in% c("CA", "ca", "C A", "CA_") ~ "CA"))
+
+# the above solution was somewhat laborious; we could have changed all of the 
+# city names to the same case to reduce some of the coding
+```
+
+\newpage
+
+### Question 4
+
+Format the date column into a date format. Ominously, these interventions all occurred on the 25th day of the month.
+
+```{r}
+df$date <- dmy(df$date)
+```
+
+\newpage
+
+### Question 5
+
+Now we want to fix the city information, but you may realize that we have two cities in California during the same date. We can't, at least from our data, distinguish the difference. Let's drop those rows with this inconsistency. One suggestion is to create a variable indicating whether to drop the row. If you performed this step correctly you should have 33 rows.
+
+```{r}
+df <- df %>%
+  # create drop variable to indicate which rows to drop
+  mutate(drop = case_when(
+    state == "CA" & city %in% c("Oakland", "Hayward") ~ "keep",
+    state == "GA" & city == "Atlanta" ~ "keep",
+    state == "TX" & city %in% c("San Antonio", "Austin") ~ "keep",
+    TRUE ~ NA_character_)) %>%
+  drop_na(drop) # the non-keep cells (NAs) will be dropped
+```
+
+\newpage
+
+### Question 6
+
+We have one last issue: our interventions column has missing data. We have two interventions that occurred in these locations:
+
+* Intervention 1: Hayward, Atlanta, San Antonio
+* Intervention 2: Oakland, Atlanta, Austin
+
+For all of the cities except Atlanta it's clear what intervention took place. Fix these clear instances. As for Atlanta, we are forced to throw out these observations since we cannot reliably determine which intervention occurred. 
+
+```{r}
+df <- df %>%
+  mutate(intervention = case_when(
+    city %in% c("Hayward", "San Antonio") ~ 1,
+    city %in% c("Oakland", "Austin") ~ 2,
+    TRUE ~ intervention)) %>%
+  drop_na(intervention)
+```
+
+How many observations did you drop?
+
+2
+
+\newpage
+
+### Question 7
+
+We have a few NAs in the outcomes column. Our on-site researchers informed us that when a score of "0" was provided, the data collection team left the cell blank. Re-code the NAs to 0. 
+
+```{r}
+df <- df %>%
+  mutate(outcome = if_else(
+    is.na(outcome), # if outcome is 0
+    0, # re-code to 0
+    outcome # otherwise keep the same value
+  ))
+```
+
+
+### Challenge
+
+Create a box plot comparing the two interventions and their outcome. The outcome is a continuous variable from 0 to 10. You may need to factor one of your variables.
+
+```{r}
+# make intervention a factor
+df <- df %>% mutate(intervention = as.factor(intervention))
+
+ggplot(df, aes(x=intervention, y=outcome)) +
+  geom_boxplot() +
+  labs(title = "Box Plot of Intervention Outcomes") +
+  theme_minimal()
+```

@@ -1,0 +1,187 @@
+---
+title: "Lab 3 complete"
+author: "Lawrence Y. Tello"
+date: "11/11/2020"
+output: pdf_document
+urlcolor: green
+---
+
+Welcome to Lab 3 !!!
+
+Great article from [Harvard Business Review about data visualization that really work](https://hbr.org/2016/06/visualizations-that-really-work).
+
+The [R Graph Gallery](https://www.r-graph-gallery.com/index.html) is an excellent resource for data visualization ideas AND code to accomplish these visualizations.
+
+[A nice website detailing many of the tools we've learned already for creating nice tables](https://rfortherestofus.com/2019/11/how-to-make-beautiful-tables-in-r/).
+
+[Our World in Data has some great visualizations](https://ourworldindata.org/).
+
+If you're working on your Desktop and want to change up your RStudio Theme, [check out these themes made by the community](https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai).
+
+```{r, out.width="50%", fig.align="center", echo=F}
+knitr::include_graphics('data/hbr_graph.png')
+```
+
+\newpage
+
+Today's goals:
+
+Part 0: 
+
+What questions do you have? 
+
+Part 1:
+
+* rotating graphs
+* modifying axis limits
+* ordering by value 
+* creating text labels 
+* adding annotations
+* saving plots
+
+Part 2:
+
+* scaling axis (values/time)
+* hiding x and y elements
+
+Part 3:
+
+* using functions to "automate" graph creation
+* detailed modifying of graph elements
+
+\newpage 
+
+```{r, include=F, echo=F}
+library(tidyverse)
+library(lubridate)
+library(ggthemes)
+```
+
+### Part 1
+
+* rotating graphs
+* modifying axis limits
+* ordering by value 
+* creating text labels 
+* adding annotations
+
+The [ggthemes packages has some nice options](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/).
+
+```{r}
+gen_plot <- read_csv("data/sample_plot.csv")
+
+
+```
+
+\newpage
+
+### Part 2:
+
+* scaling axis (values/time)
+* hiding x and y elements
+
+For the remainder of the lab, we will use data from the [UC Berkeley Safe Campus study](https://publichealth.berkeley.edu/covid-19/safe-campus-initiative/charts-and-graphs/) that took place from June to August 2020. The goal of the study was to inform the campus of the safest possible way to re-open campus, if at all. 
+
+```{r}
+df_covid <- read_csv("data/daily_symptoms.csv") %>% mutate(ts_daily = mdy(ts_daily))
+
+
+```
+
+\newpage
+
+Part 3:
+
+* using functions to "automate" graph creation
+* detailed modifying of graph element
+
+Wow! That took a lot of time and lines of code, and it was for only one graph! We have 8 more symptoms to go. Let's make a function.
+
+There's a slight variation in the syntax for dyplr when using it within a custom function.
+
+```{r}
+symptoms_covid <- function ( data, var ) {
+  # create string of variable to later to create column marker
+  var.name <- gsub( "_", " ", as.character(substitute( var ) ))
+  data %>%
+    mutate( var = ifelse( {{ var }} < 0, NA, {{ var }} )) %>%
+    # filter out NAs to remove from denominator
+    filter( !is.na( var ) ) %>%
+    # pair down to variables of interest
+    select( ts_daily, var ) %>%
+    # group by time
+    group_by( ts_daily ) %>%
+    summarize( num = sum( var ),         # numerator
+               total = n(),              # get total
+               prop = num / total ) %>%  # calculate
+    # add variable column marker
+    mutate(var.name = var.name)
+}
+```
+
+We can now create the same graph quite quickly for a different symptom:
+
+```{r}
+symptoms_covid(df_covid, Cough) %>%
+  ggplot( aes(x = ts_daily, y = prop) ) +
+    # creating bars
+    geom_col() +
+    # change x axis to show month/day, separated by 14 days
+    scale_x_date( date_labels = "%b/%d", date_breaks = "14 day" ) +
+    # change y axis into percent and limit between 0, 0.03
+    scale_y_continuous( limits = c(0, 0.03), labels = scales::percent ) +
+    # remove x and y titles, and add overall title
+    labs(x = element_blank(),
+         y = element_blank(),
+         title = "Students: Cough") +
+    # take advantage of available themes!
+    theme_fivethirtyeight()
+
+```
+
+\newpage
+
+```{r, echo=F}
+temp_a <- symptoms_covid(df_covid, Blocked_runny_nose)
+temp_b <- symptoms_covid(df_covid, Cough)
+temp_c <- symptoms_covid(df_covid, Fatigue)
+temp_d <- symptoms_covid(df_covid, Feverish)
+temp_e <- symptoms_covid(df_covid, Gastrointestinal_symptoms)
+temp_f <- symptoms_covid(df_covid, Loss_of_sense_of_taste_or_smell)
+temp_g <- symptoms_covid(df_covid, Muscle_pain_or_body_aches)
+temp_h <- symptoms_covid(df_covid, Respiratory_symptoms)
+temp_i <- symptoms_covid(df_covid, Sore_throat)
+
+symp_plot <- dplyr::bind_rows( temp_a, temp_b, temp_c, temp_d, temp_e,
+                               temp_f, temp_g, temp_h, temp_i )
+```
+
+\newpage
+
+Final product:
+
+```{r}
+ggplot(symp_plot, aes(x = ts_daily, y = prop, fill = var.name)) +
+  geom_col() +
+  facet_wrap(~ var.name) +
+  scale_x_date(date_labels = "%b/%d", date_breaks = "14 day") +
+  scale_y_continuous(limits = c(0, 0.03), labels = scales::percent) +
+  labs(x = element_blank(), 
+       y = element_blank(), 
+       title = "Daily student reported symptoms",
+       subtitle = "by type of symptom",
+       caption = "for entire duration of the study",
+       color = element_blank()) +
+  theme_fivethirtyeight() +
+  theme(plot.title = element_text(color = "#003262"),
+        plot.subtitle = element_text(color = "#FDB515"),
+        panel.grid.major.x = element_blank(),
+        plot.background = element_rect(fill = "white", colour = "white"),
+        panel.background = element_rect(fill = "white", color = "white"),
+        strip.background = element_rect(colour = "white", fill = "white"),
+        legend.position = "none",
+        axis.text.x = element_text(angle= 45, hjust = 1),
+        axis.text.y = element_text()) +
+  guides(colour = guide_legend(nrow = 3)) 
+```
+

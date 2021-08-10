@@ -1,0 +1,108 @@
+---
+title: "Lab Session #1 9/22/20"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(lubridate)
+
+```
+
+## if...else statements
+
+* create an if statement that assigns y a value of "greater than 10" when x>10
+* create an if...else that does the above and assigns value of "less than or equal to 10" when x<=10
+* create an if else that prints "West", "South", or "Everywhere else" based on state value
+* try out the above with different values of x and state
+
+```{r}
+
+x <- 8
+
+
+west_coast <- c("CA","AZ","WA")
+south <- c("AZ","NM","TX")
+
+state <- "CA"
+
+
+
+
+```
+
+## Importing a file
+
+Import the following columns and ensure they are the corresponding data types:
+
+* CDPHId - character
+* BrandName - character
+* PrimaryCategory - character 
+* ChemicalName - character
+* InitialDateReported - date
+* ChemicalDateRemoved - character (will convert later)
+
+```{r}
+
+file_path <- "https://data.chhs.ca.gov/dataset/596b5eed-31de-4fd8-a645-249f3f9b19c4/resource/57da6c9a-41a7-44b0-ab8d-815ff2cd5913/download/cscpopendata.csv"
+
+cos <- read_csv(
+  file_path
+)
+
+
+
+```
+
+## Structure and Milestone 1
+
+* Structure of table
+* Unique chemical names
+* Frequency of product type
+* Distribution of dates reported
+```{r}
+
+
+
+```
+
+## Tidying the table
+
+* get rid of duplicate lines
+* keep only records that contain Titanium or Retinol in the name
+* sort table to show by most recent date reported
+
+```{r}
+
+
+```
+
+## Create new columns
+
+* Convert ChemicalDateRemoved to date
+  + Remove records with invalid ChemicalDateRemoved
+* Has the chemical been removed
+* Days to removal
+* Days in product (if it has not been removed, used today as date)
+* Create a removal category:
+  + Removed before reported
+  + Removed within 30 days of reporting
+  + Removed within year of reporting
+  + Not removed
+    
+```{r}
+
+
+
+```
+
+Return vector of Brands that were (a) reported in 2019-2020 and (b) removed Titanium dioxide within 30 days or initial report
+```{r}
+
+```
+
+
+
+

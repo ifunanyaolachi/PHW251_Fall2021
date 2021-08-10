@@ -1,0 +1,89 @@
+---
+title: "Problem Set 4"
+author: "NAME HERE"
+date: "9/17/2020"
+output: pdf_document
+---
+
+Due date: Monday, September 28
+
+For this problem set you will tidy up a dataset of 500 individuals. We also want to calculate each individual's BMI and appropriately categorize them.
+
+Load your data:
+
+```{r, include=FALSE}
+
+```
+
+### Question 1
+
+Clean the column headers to have all lower case and no spaces and rename location_information to location.
+
+```{r}
+
+```
+
+\newpage 
+
+### Question 2
+
+Create a new variable that calculates BMI for each individual.
+
+You will need to navigate the different system of measurements (metric vs imperial). Only the United States is using imperial.
+
+* BMI calculation and conversions:
+    + metric:   $BMI = weight (kg) / [height (m)]^2$
+    + imperial: $BMI = 703 * weight (lbs) / [height (in)]^2$
+    + 1 foot = 12 inches
+    + 1 cm = 0.01 meter
+
+Although there's many ways you can accomplish this task, we want you to use an if_else(). 
+
+```{r}
+
+```
+
+\newpage
+
+### Question 3
+
+Create a new variable that categorizes BMI with case_when():
+
+* Underweight: Below 18.5
+* Normal: 18.5-24.9
+* Overweight: 25.0-29.9
+* Obese: 30.0 and Above
+
+```{r}
+
+```
+
+Could we have used if_else()?  
+
+
+\newpage
+
+### Question 4
+
+Arrange your data by location and descending order of bmi.
+
+```{r}
+
+```
+
+### Question 5
+
+Filter your data to remove the height, weight, and bmi column.
+
+```{r}
+```
+
+\newpage
+
+### Challenge
+
+Perform all the actions in this problem set with one dpylr call. 
+
+```{r}
+
+```

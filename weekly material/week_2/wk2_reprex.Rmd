@@ -1,0 +1,155 @@
+---
+title: "Minimal Reproducible examples (reprex) in R"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+## Background
+Getting stuck is just part of programming. It's usually important to find a balance between trying to get unstuck on your own and immediately asking for someone else's help. You risk getting frustrated and hating programming if you spend too long on the former, and risk annoying your friends and colleages (and never really learning how to do it right) by doing too much of the latter.
+
+When you do hit that tipping point, there are lots of resources out there (mentioned in earlier weeks, but never hurts to repeat - stack overflow, github, rstudio community, and the course Piazza). A surefire way to draw some ire out of the online R (or any programming language) is to post a question without also providing a simple reproducible example. It is oftne difficult to provide a solution without a clear sense of the problem. A simple, reproducible example provides a prospective problem solver a near-enough replica of the situation so that they can actually run it.
+
+Often just going through the process of creating a reprex will reveal the bug to you. Whether that's from changing your perspective to how someone else might look at your code, or just giving your brain a break is anyone's guess.
+
+## Simple Example:
+
+When subsetting a dataframe using brackets, I always forget if the order is [column,row] or [row, column].
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# I'm trying to pull columns 5 through 12 out of the mtcars table for cars that get better than 25 mpg!
+
+data(mtcars)
+str(mtcars)
+#sub <- mtcars[mpg > 15, c(1, 5:12)]
+
+print(sub)
+
+# But for some reason, I'm getting an error
+```
+
+So let's pretend I'm going to post this problem to rstudio community.  Typically you will want to include as much as is needed to diagnose the problem and nothing more.  That usually includes:
+
+* A brief description of what you're trying to do and what is not working
+* The libraries you are using
+* A dataset
+* Simple, clean code
+* A summary of your R environment (including package versions, general settings etc)
+
+You'll want to be sure that what you share will actually run and at least show a similar error that you're experiencing.
+
+What you want to avoid including is:
+
+* Extraneous detail
+* Any part of your dataset that is sensitive or confidential
+
+So here's what that looks like:
+```{r}
+# I'm trying to pull out columns 5 - 12 of the mtcars table for cars that get decent gas milage because I need to buy a new car. RStudio returns the following error when I run my code. Any ideas?
+
+# Error in `[.data.frame`(mtcars, mpg > 25, c(5:12)) : undefined columns selected
+
+```
+
+The next step is to load any libraries you're using. Ideally you would include all libraries you're using on the project, because the problem could be caused by libraries that are using the same commands, or other interoperability issues.  But including too many libraries means that a potential assister would have to load a bunch of libraries in order to help you. So another spot where finding a balance is called for.
+
+(This particular example is not very good, since it only needs base R to run, but I'll add some just for context)
+
+```{r}
+# I'm trying to pull out rows 5 - 12 of the mtcars table because I need to buy a new car. RStudio returns the following error when I run my code. Any ideas?
+
+# Error in `[.data.frame`(mtcars, mpg > 25, c(5:12)) : undefined columns selected
+
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+```
+
+Next I'll need to allow the user to build a dataset where they can replicate my problem. The ideal reprex can just be copied straight from your question directly into an R session and run, so you want to be sure you don't assume anything about other peoples' RStudio setup. Typically you'll be working with very large datasets and for a variety of reasons, you won't want to publish the whole dataset to RStudio community. It's also a chore to upload a data file to a help website. Fortunately, base r has a function called "dput" that allows you to generate code to build a dataset out of data actually in a dataset. So let's say I wanted to share the first 8 rows of a dataset (it doesn't have to be a built-in dataset, but we'll use iris as an example)
+
+```{r}
+# Create code to rebuild my dataset
+dput(mtcars[1:10,])
+```
+
+dput returns a structure function with all the code that is needed to rebuild my shrunken dataset.  So I just need to copy and paste into my reprex.  And then I can add the code that's not working. It's not likely going to be relevant for this class, since everyone is working on the same server, but usually it's a good idea to include sessionInfo() at the end of your reprex. Just in case it is something to do with a package or operating system version, this gives and not actually anything about your code.
+
+
+```{r}
+
+# I'm trying to pull out rows 5 - 12 of the mtcars table because I need to buy a new car. RStudio returns the following error when I run my code. Any ideas?
+
+# Error in `[.data.frame`(mtcars, mpg > 25, c(5:12)) : undefined columns selected
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# Dataset:
+test <- structure(list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 
+24.4, 22.8, 19.2), cyl = c(6, 6, 4, 6, 8, 6, 8, 4, 4, 6), disp = c(160, 
+160, 108, 258, 360, 225, 360, 146.7, 140.8, 167.6), hp = c(110, 
+110, 93, 110, 175, 105, 245, 62, 95, 123), drat = c(3.9, 3.9, 
+3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92), wt = c(2.62, 
+2.875, 2.32, 3.215, 3.44, 3.46, 3.57, 3.19, 3.15, 3.44), qsec = c(16.46, 
+17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20, 22.9, 18.3), vs = c(0, 
+0, 1, 1, 0, 1, 0, 1, 1, 1), am = c(1, 1, 1, 0, 0, 0, 0, 0, 0, 
+0), gear = c(4, 4, 4, 3, 3, 3, 3, 4, 4, 4), carb = c(4, 4, 1, 
+1, 2, 1, 4, 2, 2, 4)), row.names = c("Mazda RX4", "Mazda RX4 Wag", 
+"Datsun 710", "Hornet 4 Drive", "Hornet Sportabout", "Valiant", 
+"Duster 360", "Merc 240D", "Merc 230", "Merc 280"), class = "data.frame")
+
+final <- test[mpg > 15, c(1, 5:11)]
+print(final)
+
+sessionInfo()
+```
+## Reprex package
+
+The reprex package does a lot of cool things, including taking code and comments in your script file and translating them to markdown or html for easy pasting onto a website.  Basically you can just wrap your code in a reprex::reprex function (make sure if you're wrapping your code you use both a parenthesis and a curly brace) and it produces a nicely formatted output.
+
+```{r}
+
+reprex::reprex({
+# I'm trying to pull out rows 5 - 12 of the mtcars table because I need to buy a new car. RStudio returns the following error when I run my code. Any ideas?
+
+# Error in `[.data.frame`(mtcars, mpg > 25, c(5:12)) : undefined columns selected
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# Dataset:
+test <- structure(list(mpg = c(21, 21, 22.8, 21.4, 18.7, 18.1, 14.3, 
+24.4, 22.8, 19.2), cyl = c(6, 6, 4, 6, 8, 6, 8, 4, 4, 6), disp = c(160, 
+160, 108, 258, 360, 225, 360, 146.7, 140.8, 167.6), hp = c(110, 
+110, 93, 110, 175, 105, 245, 62, 95, 123), drat = c(3.9, 3.9, 
+3.85, 3.08, 3.15, 2.76, 3.21, 3.69, 3.92, 3.92), wt = c(2.62, 
+2.875, 2.32, 3.215, 3.44, 3.46, 3.57, 3.19, 3.15, 3.44), qsec = c(16.46, 
+17.02, 18.61, 19.44, 17.02, 20.22, 15.84, 20, 22.9, 18.3), vs = c(0, 
+0, 1, 1, 0, 1, 0, 1, 1, 1), am = c(1, 1, 1, 0, 0, 0, 0, 0, 0, 
+0), gear = c(4, 4, 4, 3, 3, 3, 3, 4, 4, 4), carb = c(4, 4, 1, 
+1, 2, 1, 4, 2, 2, 4)), row.names = c("Mazda RX4", "Mazda RX4 Wag", 
+"Datsun 710", "Hornet 4 Drive", "Hornet Sportabout", "Valiant", 
+"Duster 360", "Merc 240D", "Merc 230", "Merc 280"), class = "data.frame")
+
+final <- test[test$mpg > 15, c(1, 5:11)]
+print(final)
+})
+
+```
+
+## Additional Thoughts
+
+It's good to look around at sites like github, stack overflow, and rstudio community sites to see how other users produce their reprex and how they are received by other commenters. It's also good to make sure your code is well organized and never a bad time to check whether your code follows [a style guilde](https://reprex.tidyverse.org/articles/reprex-dos-and-donts.html)
+
+There are lots of good resources on creating good reprex. 
+
+* [The reprex package documentation](https://reprex.tidyverse.org/articles/reprex-dos-and-donts.html)
+* [A slide deck from Jenny Bryan](https://speakerdeck.com/jennybc/reprex-reproducible-examples-with-r)
+* [Hadley Wickham's thoughts on reprex](http://adv-r.had.co.nz/Reproducibility.html)
+* [Stack Overflow - though not R specific](https://stackoverflow.com/help/minimal-reproducible-example)
+

@@ -1,0 +1,149 @@
+---
+title: "Problem Set 8"
+author: "name?!"
+date: "date?!"
+output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Due date: Wednesday, November 11th
+
+## From Problem Set \#7, Part 2
+
+If you previously completed this part please copy/paste your code below.
+
+### Question 7 / Challenge
+
+Use the readxl library and load two data sets from the
+"two\_data\_sheets" file. There's a parameter that you can specify which
+sheet to load with read\_excel(). In this case, we have data about rat
+reaction time in sheet 1 and home visits in sheet 2.
+
+```{r, echo=T, results="markup"}
+library(tidyverse)
+library(readxl)
+
+```
+
+\newpage
+
+### Question 8
+
+For the rats data, pivot the data frame from wide to long format. We
+want the 1, 2, 3 columns, which represent the amount of cheese placed in
+a maze, to transform into a column called "cheese". The values in the
+cheese column will be the time, which represents the amount of time the
+rat took to complete the maze. Please use the head() function to print
+your data frame.
+
+```{r}
+
+```
+
+\newpage
+
+### Question 9
+
+Compute the mean and standard deviation of the maze time.
+
+```{r}
+
+```
+
+\newpage
+
+### Question 10
+
+With the home visits data, pivot the data frame
+from long to wide. We want the names from the action column to become
+unique columns and the values to represent the counts. Please use the
+head() function to print your data frame.
+
+```{r}
+
+```
+
+\newpage
+
+## Problem Set 8
+
+For this problem set we will work with four tables that are relational
+to each other. The following keys link the tables to each other:
+
+* patient_id: patients, schedule
+* visit_id: schedule, visits
+* doctor_id: visits, doctors
+
+```{r, echo=F, include=F, results="markup"}
+patients <- read_csv("../data/patients.csv")
+visits <- read_csv("../data/visits.csv")
+doctors <- read_csv("../data/doctors.csv")
+schedule <- read_csv("../data/schedule.csv")
+```
+
+### Question 1
+
+You've been tasked to collect information on patients within the patients
+data set. To start this task, you need to join the patient data to the
+schedule data. We only want to keep the observations that are both
+present in the patient data AND the schedule data.
+
+Which kind of join do you use?
+
+
+How many observations do you see? Note: Some patients have multiple
+visits.
+
+
+```{r}
+
+```
+
+\newpage
+
+### Question 2
+
+In the visits data, we have a variable called "follow_up" where Y means
+a follow-up is needed and N means a follow-up is not needed. How many of
+these patients require a follow-up? You will want to first make a join
+and then subset. Use the data frame created from the previous question.
+
+Which join did you use?
+
+
+How many patients need a follow-up?
+
+
+```{r}
+
+```
+
+\newpage
+
+### Question 3
+
+Which doctors do these patients need follow-up with? Print out the
+doctors. You can use unique(). Call this data frame **doctors.contact**.
+
+Which join did you use?
+
+
+```{r}
+
+```
+
+\newpage
+
+### Question 4 / Challenge
+
+Find out which patients that are in schedule but not in doctors.contact.
+Hint: anti_join()
+
+Create a unique list of these patients with their demographic
+information from the patients data.
+
+```{r}
+
+```
