@@ -1,7 +1,7 @@
 ---
 title: "Problem Set 1"
-author: "Your name here"
-date: "date here"
+author: "Ifunanya Dbiaezue"
+date: "September 6th"
 output: pdf_document
 ---
 
@@ -24,11 +24,11 @@ First, try knitting by pressing Alt + Shift + K (Windows) or Command + Shift + K
 Un-comment and fix the following code to make it run. Note: You are only using numeric values in this question.
 
 ```{r question_1}
-#my_variable -> 2
+my_variable -> 2
 
-#my_other_variable <- eight
+my_other_variable <- 8
 
-#my_variable_ + my_Other_variable
+my_variable + my_other_variable
 ```
 
 \newpage
@@ -37,14 +37,17 @@ Un-comment and fix the following code to make it run. Note: You are only using n
 
 Create four variables with the following data types:
 
-  1. character
-  2. numeric
-  3. integer
-  4. logical
+  1. character 
+  3. numeric
+  4. integer
+  5. logical
   
 ```{r question_2}
 # your code here
-```
+v_char <- c("dog")
+v_num <- c(1,2,3,4)
+v_integer <- c(10L, 20L, 30L)
+v_logic <- c(TRUE, FALSE)
 
 \newpage
 
@@ -58,15 +61,17 @@ x <- 10; y <- 11
 ### is x equal to y? ###
 
 # your code here
+x==y
 
 ### does x not equal y? ###
 
 # your code here
+x!=y
 
 ### is x greater than or equal to y? ###
 
 # your code here
-
+x>y | x==y
 ```
 
 
@@ -100,7 +105,9 @@ Calculate the odds ratio of becoming ill due to cheesecake. Save the odds ratio 
 
 ```{r question_4}
 # your code here
-```
+odd_ratio = (cheesecake_exposure[c(1)] * cheesecake_exposure[c(4)]) / 
+(cheesecake_exposure[c(2)] * cheesecake_exposure[c(3)])
+odd_ratio```
 
 \newpage
 
@@ -115,8 +122,9 @@ As a logic check, you should expect an output with one vector: 52, 54, 56, 58, 6
 
 ```{r question_6}
 # your code here
-```
-
+vector_1 <- c(1,2,3,4,5)
+vector_2 <- c(51:55)
+vector_1 + vector_2
 \newpage
 
 ### Question 7
@@ -127,9 +135,9 @@ As a logic check, you should expect an output with one vector: 52, 54, 56, 58, 6
 
 ```{r question_7}
 # your code here
-```
-
-TYPE YOUR ANSWERS TO (b) AND (c) HERE
+help(package <- "round")
+TYPE YOUR ANSWERS TO (b) Help 
+AND (c) Package
 
 ### Question 8
 
@@ -138,6 +146,11 @@ Write a single line of code to divide 377 by 120 and round the result to three d
 pi
 # your code here
 ```
+ptolemy_pi <- round((377/120),3)
+
+ptolemy_pi
+
+ptolemy_pi==pi
 
 \newpage
 
@@ -145,7 +158,7 @@ pi
 Use an if/else statement to print out "greater than 1" if the odds of becoming ill due to cheesecake (from question 4) is higher than 1.0. Print "not greater than 1" if the odds are not higher than 1.0.
 ```{r question_9}
 # your code here
-```
+if(odd_ratio>1){print("greater than 1")} else {print("not greater than 1")}
 
 
 You did it! Please knit to a pdf, download, and submit to Gradescope. 
